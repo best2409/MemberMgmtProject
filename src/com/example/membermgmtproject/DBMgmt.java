@@ -10,11 +10,12 @@ import org.apache.http.client.utils.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.message.*;
 import org.apache.http.params.*;
+import org.json.*;
 
 import android.util.*;
 
 public class DBMgmt {
-	private String urlString = "http://192.168.0.34:8080/JSONServerProject/register.jsp";
+	private String urlString;
 	private DefaultHttpClient client;
 	private HttpPost post;
 	private HttpResponse response; 
@@ -24,12 +25,13 @@ public class DBMgmt {
 	
 	public DBMgmt() {
 		client = new DefaultHttpClient();
-		
-		
-		
 	}
 	
-	public void insertMember(Member m) {
+	
+	// 회원 가입 
+	public int insertMember(Member m) {
+		urlString = "http://192.168.0.34:8080/JSONServerProject/register.jsp";
+		
 		try {
 			
 /*			params.setParameter("userName", m.getUserName());
@@ -50,12 +52,13 @@ public class DBMgmt {
 			response = client.execute(post);
 			
 			resCode = response.getStatusLine().getStatusCode();
-			//Integer.toString(resCode)
+			
+			if(resCode == HttpStatus.SC_OK) {
+				return 1;
+			}
 			
 		
-			Log.i("jsoninfo", Integer.toString(resCode));
-			
-			System.out.println("gggggg");
+			// Log.i("jsoninfo", Integer.toString(resCode));
 			
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -64,6 +67,84 @@ public class DBMgmt {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.i("jsoninfo", Integer.toString(resCode));
+		}
+		
+		return 0;
+	}
+	
+	
+	// 회원 리스트  
+	public List<Member> selectMember() {
+		urlString = "http://192.168.0.34:8080/JSONServerProject/list.jsp";
+		List<Member> parseData = null;
+		
+		try {
+			post = new HttpPost(urlString);
+			
+			response = client.execute(post);
+			
+			HttpEntity entity = response.getEntity();
+			
+			
+			resCode = response.getStatusLine().getStatusCode();
+			
+			if(resCode == HttpStatus.SC_OK) {
+				BufferedReader bufreader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				
+				String line = null;
+				String result = "";
+	
+				while ((line = bufreader.readLine()) != null) {
+					result += line;
+				}	
+				parseData = jsonParserList(result);
+			}
+			
+		
+			// Log.i("jsoninfo", Integer.toString(resCode));
+			
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.i("jsoninfo", Integer.toString(resCode));
+		}
+		
+		return parseData;
+	}
+	
+//  JSON Parsing
+	private List<Member> jsonParserList(String pRecvServerPage) {	
+		List<Member> list = new ArrayList<Member>();
+		
+		Member m;
+		Log.e("jsoninfo", pRecvServerPage);
+		try {
+			
+			JSONArray jsonArray = new JSONArray(pRecvServerPage);
+			JSONObject jsonObject;
+			
+			String uName, uPwd, uEmail;
+			
+			for (int i = 0; i < jsonArray.length(); i++) {
+				
+				jsonObject = jsonArray.getJSONObject(i);
+				
+				uName = (String) jsonObject.get("userName");
+				uEmail = (String) jsonObject.get("userEmail");
+				
+				m = new Member(uName, "", uEmail);
+				
+				list.add(m);
+			}
+			
+			return list;
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

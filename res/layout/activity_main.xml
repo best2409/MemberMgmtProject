@@ -7,6 +7,7 @@
     <TextView
         android:text = "Join Member"
         android:textSize="20dp"
+        android:textStyle="bold"
 		android:gravity="center"
         android:background="@android:color/holo_red_dark"
         android:layout_width="match_parent"
@@ -25,6 +26,7 @@
         android:layout_height="50dp"/>
     <EditText
         android:id="@+id/userPwd"
+        android:inputType="textPassword"
         android:textColor="@android:color/black"
         android:hint="Create a password"
         android:layout_width="match_parent"
@@ -35,7 +37,11 @@
         android:text="Sign up"
         android:layout_width="wrap_content"
         android:layout_height="50dp"/>
-
     
+    <Button
+        android:id="@+id/btnList"
+        android:text="List"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"/>    
 
 </LinearLayout>

@@ -1,8 +1,8 @@
 package com.example.membermgmtproject;
 
 import android.app.*;
+import android.content.*;
 import android.os.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -11,7 +11,7 @@ import android.widget.*;
 public class MainActivity extends Activity {
 	
 	private EditText userName, userEmail, userPwd;
-	private Button loginBtn;
+	private Button loginBtn, listBtn;
 	
 	private DBMgmt mgmt;
 
@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
         userPwd = (EditText) findViewById(R.id.userPwd);
         
         loginBtn = (Button) findViewById(R.id.btnLogin);
+        listBtn = (Button) findViewById(R.id.btnList);
     }
     
     
@@ -42,8 +43,8 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(), "start", Toast.LENGTH_SHORT).show();
-				Log.e("jsoninfo", "DB Start");
+				/*Toast.makeText(getApplicationContext(), "start", Toast.LENGTH_SHORT).show();
+				Log.e("jsoninfo", "DB Start");*/
 				
 				uName = userName.getText().toString();
 				uPwd = userPwd.getText().toString();
@@ -52,10 +53,30 @@ public class MainActivity extends Activity {
 				
 				Member m = new Member(uName, uPwd, uEmail);
 				
-				mgmt.insertMember(m);
+				int result = mgmt.insertMember(m);
 				
-				Log.e("jsoninfo", "DB End");
-				Toast.makeText(getApplicationContext(), uName + "=" + uPwd + "=" + uEmail, Toast.LENGTH_SHORT).show();
+				if(result == 1) {
+					Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+					
+					Intent intent = new Intent(MainActivity.this, SubActivity.class);
+					
+					startActivity(intent);
+				}
+				
+				//Log.e("jsoninfo", "DB End");
+				
+			}
+        	
+        });
+        
+        listBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(MainActivity.this, SubActivity.class);
+				
+				startActivity(intent);
 			}
         	
         });
